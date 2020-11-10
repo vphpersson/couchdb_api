@@ -8,7 +8,8 @@ def get_db_doc(
     client: AsyncClient,
     db: str,
     docid: str,
-    params: Optional[Dict[str, str]] = None
+    params: Optional[Dict[str, str]] = None,
+    **client_kwargs: Dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Retrieve from the CouchDB database with the name `db` a document having the document ID `docid`.
@@ -19,10 +20,11 @@ def get_db_doc(
     :param db: The name of the CouchDB database from which to retrieve the document.
     :param docid: The document ID of the document to retrieve.
     :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.get(f'/{db}/{docid}', params=params)
+    return client.get(f'/{db}/{docid}', params=params, **client_kwargs)
 
 
 def put_db_doc(
@@ -30,7 +32,8 @@ def put_db_doc(
     db: str,
     docid: str,
     body: JSON,
-    params: Optional[Dict[str, str]] = None
+    params: Optional[Dict[str, str]] = None,
+    **client_kwargs: Dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Add a new document to the CouchDB database with the name `db`.
@@ -42,17 +45,19 @@ def put_db_doc(
     :param docid: The document ID of the new document.
     :param body: JSON content corresponding to the new document.
     :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.put(url=f'/{db}/{docid}', json=body, params=params)
+    return client.put(url=f'/{db}/{docid}', json=body, params=params, **client_kwargs)
 
 
 def delete_db_doc(
     client: AsyncClient,
     db: str,
     docid: str,
-    params: Optional[Dict[str, str]] = None
+    params: Optional[Dict[str, str]] = None,
+    **client_kwargs: Dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Mark a document as deleted.
@@ -63,26 +68,38 @@ def delete_db_doc(
     :param db: The name of the CocuhDB database that stores the document to be deleted.
     :param docid: The document ID of the document to be deleted.
     :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.delete(url=f'/{db}/{docid}', params=params)
+    return client.delete(url=f'/{db}/{docid}', params=params, **client_kwargs)
 
 
-def db_put(client: AsyncClient, db: str, params: Optional[Dict[str, str]] = None) -> Coroutine[Any, Any, Response]:
+def db_put(
+    client: AsyncClient,
+    db: str,
+    params: Optional[Dict[str, str]] = None,
+    **client_kwargs: Dict[str, Any]
+) -> Coroutine[Any, Any, Response]:
     """
     Create a new database.
 
     :param client: An HTTP client with which to perform the request.
     :param db: The name of the database to be created.
     :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.put(url=f'/{db}', params=params)
+    return client.put(url=f'/{db}', params=params, **client_kwargs)
 
 
-def db_post(client: AsyncClient, db: str, body: JSON) -> Coroutine[Any, Any, Response]:
+def db_post(
+    client: AsyncClient,
+    db: str,
+    body: JSON,
+    **client_kwargs: Dict[str, Any]
+) -> Coroutine[Any, Any, Response]:
     """
     Add a new document to the CouchDB with the name `db`, without specifying an ID for the document.
 
@@ -91,13 +108,19 @@ def db_post(client: AsyncClient, db: str, body: JSON) -> Coroutine[Any, Any, Res
     :param client: An HTTP client with which to perform the request.
     :param db: The name of the CouchDB database to which to add the document.
     :param body: JSON content corresponding to the new document.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.post(url=f'/{db}', json=body)
+    return client.post(url=f'/{db}', json=body, **client_kwargs)
 
 
-def db_find(client: AsyncClient, db: str, body: JSON) -> Coroutine[Any, Any, Response]:
+def db_find(
+    client: AsyncClient,
+    db: str,
+    body: JSON,
+    **client_kwargs: Dict[str, Any]
+) -> Coroutine[Any, Any, Response]:
     """
     Find documents from the CouchDB database with the name `db` matching a provided specification.
 
@@ -106,16 +129,18 @@ def db_find(client: AsyncClient, db: str, body: JSON) -> Coroutine[Any, Any, Res
     :param client: An HTTP client with which to perform the request.
     :param db: The name of the CouchDB database in which to find the matching documents.
     :param body: JSON content corresponding to a specification for what documents to retrieve.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.post(url=f'/{db}/_find', json=body)
+    return client.post(url=f'/{db}/_find', json=body, **client_kwargs)
 
 
 def db_all_docs(
     client: AsyncClient,
     db: str,
-    params: Optional[Dict[str, str]] = None
+    params: Optional[Dict[str, str]] = None,
+    **client_kwargs: Dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Bulk retrieve documents from the CouchDB database with the name `db`.
@@ -125,17 +150,19 @@ def db_all_docs(
     :param client: An HTTP client with which to perform the request.
     :param db: The name of the database to retrieve documents from.
     :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.get(url=f'/{db}/_all_docs', params=params)
+    return client.get(url=f'/{db}/_all_docs', params=params, **client_kwargs)
 
 
 def db_bulk_docs(
     client: AsyncClient,
     db: str,
     documents: List[JSON],
-    new_edits: bool = True
+    new_edits: bool = True,
+    **client_kwargs: Dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Bulk create or update a set of documents to the CouchDB database with the name `db`.
@@ -146,13 +173,18 @@ def db_bulk_docs(
     :param db: The name of the database which to operate on.
     :param documents: The documents to be created or updated.
     :param new_edits: A flag indicating whether not to prevent the database from assigning new revision IDs.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.post(url=f'/{db}/_bulk_docs', json=dict(docs=documents, new_edits=new_edits))
+    return client.post(url=f'/{db}/_bulk_docs', json=dict(docs=documents, new_edits=new_edits), **client_kwargs)
 
 
-def all_dbs(client: AsyncClient, params: Optional[Dict[str, str]] = None) -> Coroutine[Any, Any, Response]:
+def all_dbs(
+    client: AsyncClient,
+    params: Optional[Dict[str, str]] = None,
+    **client_kwargs: Dict[str, Any]
+) -> Coroutine[Any, Any, Response]:
     """
     Return a list of all the databases in the CouchDB instance.
 
@@ -160,7 +192,8 @@ def all_dbs(client: AsyncClient, params: Optional[Dict[str, str]] = None) -> Cor
 
     :param client: An HTTP client with which to perform the request.
     :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
 
-    return client.get(url='/_all_dbs', params=params)
+    return client.get(url='/_all_dbs', params=params, **client_kwargs)
