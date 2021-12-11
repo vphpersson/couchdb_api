@@ -1,19 +1,24 @@
-from typing import Optional, List, Dict, Union, Mapping, Any, Coroutine
+from typing import Optional, Union, Mapping, Any, Coroutine
+from dataclasses import asdict
+
 from httpx import AsyncClient, Response
 
-JSON = Union[str, int, float, bool, None, Mapping[str, 'JSON'], List['JSON']]
+from couchdb_api.structures import DesignDocument, SecurityObject
+
+
+JSON = Union[str, int, float, bool, None, Mapping[str, 'JSON'], list['JSON']]
 
 
 def get_db_doc(
     client: AsyncClient,
     db: str,
     docid: str,
-    params: Optional[Dict[str, str]] = None,
-    **client_kwargs: Dict[str, Any]
+    params: Optional[dict[str, str]] = None,
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Retrieve from the CouchDB database with the name `db` a document having the document ID `docid`.
-
+:
     https://docs.couchdb.org/en/stable/api/document/common.html#get--db-docid
 
     :param client: An HTTP client with which to perform the request.
@@ -32,8 +37,8 @@ def put_db_doc(
     db: str,
     docid: str,
     body: JSON,
-    params: Optional[Dict[str, str]] = None,
-    **client_kwargs: Dict[str, Any]
+    params: Optional[dict[str, str]] = None,
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Add a new document to the CouchDB database with the name `db`.
@@ -56,8 +61,8 @@ def delete_db_doc(
     client: AsyncClient,
     db: str,
     docid: str,
-    params: Optional[Dict[str, str]] = None,
-    **client_kwargs: Dict[str, Any]
+    params: Optional[dict[str, str]] = None,
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Mark a document as deleted.
@@ -78,8 +83,8 @@ def delete_db_doc(
 def db_put(
     client: AsyncClient,
     db: str,
-    params: Optional[Dict[str, str]] = None,
-    **client_kwargs: Dict[str, Any]
+    params: Optional[dict[str, str]] = None,
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Create a new database.
@@ -98,10 +103,15 @@ def db_post(
     client: AsyncClient,
     db: str,
     body: JSON,
-    **client_kwargs: Dict[str, Any]
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
-    Add a new document to the CouchDB with the name `db`, without specifying an ID for the document.
+    Creates a new document in the specified database, using the supplied JSON document structure.
+
+    If the JSON structure includes the _id field, then the document will be created with the specified document ID.
+
+    If the _id field is not specified, a new unique ID will be generated, following whatever UUID algorithm is
+    configured for that server.
 
     https://docs.couchdb.org/en/stable/api/database/common.html#post--db
 
@@ -119,7 +129,7 @@ def db_find(
     client: AsyncClient,
     db: str,
     body: JSON,
-    **client_kwargs: Dict[str, Any]
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Find documents from the CouchDB database with the name `db` matching a provided specification.
@@ -139,8 +149,8 @@ def db_find(
 def db_all_docs(
     client: AsyncClient,
     db: str,
-    params: Optional[Dict[str, str]] = None,
-    **client_kwargs: Dict[str, Any]
+    params: Optional[dict[str, str]] = None,
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Bulk retrieve documents from the CouchDB database with the name `db`.
@@ -160,9 +170,9 @@ def db_all_docs(
 def db_bulk_docs(
     client: AsyncClient,
     db: str,
-    documents: List[JSON],
+    documents: list[JSON],
     new_edits: bool = True,
-    **client_kwargs: Dict[str, Any]
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Bulk create or update a set of documents to the CouchDB database with the name `db`.
@@ -182,8 +192,8 @@ def db_bulk_docs(
 
 def all_dbs(
     client: AsyncClient,
-    params: Optional[Dict[str, str]] = None,
-    **client_kwargs: Dict[str, Any]
+    params: Optional[dict[str, str]] = None,
+    **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
     Return a list of all the databases in the CouchDB instance.
@@ -197,3 +207,82 @@ def all_dbs(
     """
 
     return client.get(url='/_all_dbs', params=params, **client_kwargs)
+
+
+def put_design_doc(
+    client: AsyncClient,
+    db: str,
+    ddoc: str,
+    design_document: DesignDocument
+) -> Coroutine[Any, Any, Response]:
+    """
+    Create a new named design document, or create a new revision of the existing design document.
+
+    https://docs.couchdb.org/en/stable/api/ddoc/common.html#put--db-_design-ddoc
+
+    :param client: An HTTP client with which to perform the request.
+    :param db: The name of the database which to operate on.
+    :param ddoc: The name of the design document to be created in the database.
+    :param design_document: The design document to be created in the database.
+    :return: The response of the HTTP request.
+    """
+
+    return client.put(
+        url=f'/{db}/_design/{ddoc}',
+        json=asdict(design_document, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})
+    )
+
+
+def put_db_security(
+    client: AsyncClient,
+    db: str,
+    security_object: SecurityObject
+) -> Coroutine[Any, Any, Response]:
+    """
+    Set the security object for a given database.
+
+    https://docs.couchdb.org/en/stable/api/database/security.html#put--db-_security
+
+    :param client: An HTTP client with which to perform the request.
+    :param db: The name of the database which to operate on.
+    :param security_object: The security object to set for the database.
+    :return: The response of the HTTP request.
+    """
+
+    return client.put(
+        url=f'/{db}/_security',
+        json=asdict(security_object)
+    )
+
+
+def create_user(
+    client: AsyncClient,
+    username: str,
+    password: str,
+    roles: Optional[list[str]] = None
+) -> Coroutine[Any, Any, Response]:
+    """
+    Create a new user in CouchDB.
+
+    A new user is created by adding a user object to the `_users` database.
+
+    https://docs.couchdb.org/en/stable/intro/security.html#creating-a-new-user
+
+    :param client: An HTTP client with which to perform the request.
+    :param username: The username of the user to be created.
+    :param password: The password of the user to be created.
+    :param roles: The roles of the user to be created.
+    :return: The response of the HTTP request.
+    """
+
+    return put_db_doc(
+        client=client,
+        db='_users',
+        docid=f'org.couchdb.user:{username}',
+        body=dict(
+            name=username,
+            password=password,
+            roles=roles or [],
+            type='user'
+        )
+    )
