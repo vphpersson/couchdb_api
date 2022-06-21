@@ -18,7 +18,7 @@ def get_db_doc(
 ) -> Coroutine[Any, Any, Response]:
     """
     Retrieve from the CouchDB database with the name `db` a document having the document ID `docid`.
-:
+
     https://docs.couchdb.org/en/stable/api/document/common.html#get--db-docid
 
     :param client: An HTTP client with which to perform the request.
@@ -88,6 +88,8 @@ def db_put(
 ) -> Coroutine[Any, Any, Response]:
     """
     Create a new database.
+
+    https://docs.couchdb.org/en/stable/api/database/common.html#put--db
 
     :param client: An HTTP client with which to perform the request.
     :param db: The name of the database to be created.
