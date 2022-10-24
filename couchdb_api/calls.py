@@ -1,4 +1,4 @@
-from typing import Optional, Union, Mapping, Any, Coroutine
+from typing import Optional, Mapping, Any, Coroutine
 from dataclasses import asdict
 
 from httpx import AsyncClient, Response
@@ -6,7 +6,7 @@ from httpx import AsyncClient, Response
 from couchdb_api.structures import DesignDocument, SecurityObject
 
 
-JSON = Union[str, int, float, bool, None, Mapping[str, 'JSON'], list['JSON']]
+JSON = str | int | float | bool | None | Mapping[str, 'JSON'] | list['JSON']
 
 
 def get_db_doc(
@@ -255,6 +255,29 @@ def put_db_security(
         url=f'/{db}/_security',
         json=asdict(security_object)
     )
+
+
+def put_attachment(
+    client: AsyncClient,
+    db: str,
+    doc_id: str,
+    attname: str,
+    data: bytes
+) -> Coroutine[Any, Any, Response]:
+    """
+    Upload the supplied content as an attachment to the specified document.
+
+    https://docs.couchdb.org/en/stable/api/document/attachments.html#put--db-docid-attname
+
+    :param client: An HTTP client with which to perform the request.
+    :param db: The name of the database which to operate on.
+    :param doc_id: The ID of the document in which to store the attachment.
+    :param attname: The name of the attachment to be stored.
+    :param data: The data constituting the attachment.
+    :return: The response of the HTTP request.
+    """
+
+    return client.put(url=f'/{db}/{doc_id}/{attname}', data=data)
 
 
 def create_user(

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from httpx import Request, Response, HTTPStatusError
 
 
@@ -8,7 +6,7 @@ class CouchDBHTTPStatusError(HTTPStatusError):
         super().__init__(message=message, request=request, response=response)
 
 
-def get_db_doc_status_code_message(status_code: int) -> Optional[str]:
+def get_db_doc_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `GET /{db}/{docid}` response to a message.
 
@@ -33,7 +31,7 @@ def get_db_doc_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def put_db_doc_status_code_message(status_code: int) -> Optional[str]:
+def put_db_doc_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `PUT /{db}/{docid}` response to a message.
 
@@ -60,7 +58,7 @@ def put_db_doc_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def delete_db_doc_status_code_message(status_code: int) -> Optional[str]:
+def delete_db_doc_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `DELETE /{db}/{docid}` response to a message.
 
@@ -87,7 +85,7 @@ def delete_db_doc_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def db_put_status_code_message(status_code: int) -> Optional[str]:
+def db_put_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `PUT /{db}` response to a message.
 
@@ -112,7 +110,7 @@ def db_put_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def db_post_status_code_message(status_code: int) -> Optional[str]:
+def db_post_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `POST /{db}` response to a message.
 
@@ -139,7 +137,7 @@ def db_post_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def db_find_status_code_message(status_code: int) -> Optional[str]:
+def db_find_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `POST /{db}/_find` response to a message.
 
@@ -162,7 +160,7 @@ def db_find_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def db_all_docs_status_code_message(status_code: int) -> Optional[str]:
+def db_all_docs_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `GET /{db}/_all_docs` response to a message.
 
@@ -181,7 +179,7 @@ def db_all_docs_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def db_bulk_docs_status_code_message(status_code: int) -> Optional[str]:
+def db_bulk_docs_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `POST /{db}/_bulk_docs` response to a message.
 
@@ -202,7 +200,7 @@ def db_bulk_docs_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def all_dbs_status_code_message(status_code: int) -> Optional[str]:
+def all_dbs_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `GET /_all_dbs` response to a message.
 
@@ -232,7 +230,7 @@ def put_design_doc_status_code_message(status_code: int) -> str:
     return put_db_doc_status_code_message(status_code=status_code)
 
 
-def put_db_security_status_code_message(status_code: int) -> Optional[str]:
+def put_db_security_status_code_message(status_code: int) -> str | None:
     """
     Translate a status code from a `PUT /{db}/_security` response to a message.
 
@@ -251,7 +249,7 @@ def put_db_security_status_code_message(status_code: int) -> Optional[str]:
             return None
 
 
-def status_code_message_from_response(response: Response) -> Optional[str]:
+def status_code_message_from_response(response: Response) -> str | None:
     """
     Translate a status code from a CouchDB API call response to a message.
 
