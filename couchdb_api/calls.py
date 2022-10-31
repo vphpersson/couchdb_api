@@ -260,9 +260,10 @@ def put_db_security(
 def put_attachment(
     client: AsyncClient,
     db: str,
-    doc_id: str,
+    docid: str,
     attname: str,
-    data: bytes
+    data: bytes,
+    rev: str | None = None
 ) -> Coroutine[Any, Any, Response]:
     """
     Upload the supplied content as an attachment to the specified document.
@@ -271,13 +272,18 @@ def put_attachment(
 
     :param client: An HTTP client with which to perform the request.
     :param db: The name of the database which to operate on.
-    :param doc_id: The ID of the document in which to store the attachment.
+    :param docid: The ID of the document in which to store the attachment.
     :param attname: The name of the attachment to be stored.
     :param data: The data constituting the attachment.
+    :param rev: The document revision of a document to be updated.
     :return: The response of the HTTP request.
     """
 
-    return client.put(url=f'/{db}/{doc_id}/{attname}', data=data)
+    return client.put(
+        url=f'/{db}/{docid}/{attname}',
+        params=dict(rev=rev) if rev else None,
+        data=data
+    )
 
 
 def create_user(
