@@ -263,7 +263,8 @@ def put_attachment(
     docid: str,
     attname: str,
     data: bytes,
-    rev: str | None = None
+    rev: str | None = None,
+    content_type: str | None = None
 ) -> Coroutine[Any, Any, Response]:
     """
     Upload the supplied content as an attachment to the specified document.
@@ -276,11 +277,13 @@ def put_attachment(
     :param attname: The name of the attachment to be stored.
     :param data: The data constituting the attachment.
     :param rev: The document revision of a document to be updated.
+    :param content_type: The content type of the attachment.
     :return: The response of the HTTP request.
     """
 
     return client.put(
         url=f'/{db}/{docid}/{attname}',
+        headers={'Content-Type': content_type} if content_type else None,
         params=dict(rev=rev) if rev else None,
         data=data
     )
