@@ -289,6 +289,32 @@ def put_attachment(
     )
 
 
+def get_attachment(
+    client: AsyncClient,
+    db: str,
+    docid: str,
+    attname: str,
+    rev: str | None = None
+) -> Coroutine[Any, Any, Response]:
+    """
+    Retrieve the file attachment data associated with the specified document.
+
+    https://docs.couchdb.org/en/stable/api/document/attachments.html#get--db-docid-attname
+
+    :param client: An HTTP client with which to perform the request.
+    :param db: The name of the database that stores the file attachment.
+    :param docid: The ID of the document that stores the file attachment.
+    :param attname: The name of the file attachment whose data to retrieve.
+    :param rev: The document revision of the document that stores the file attachment.
+    :return: The response of the HTTP request.
+    """
+
+    return client.get(
+        url=f'/{db}/{docid}/{attname}',
+        params=dict(rev=rev) if rev else None,
+    )
+
+
 def create_user(
     client: AsyncClient,
     username: str,
