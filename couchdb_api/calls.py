@@ -37,7 +37,9 @@ def put_db_doc(
     db: str,
     docid: str,
     body: JSON,
-    params: Optional[dict[str, str]] = None,
+    rev: str | None = None,
+    batch: str | None = None,
+    new_edits: bool | None = None,
     **client_kwargs: dict[str, Any]
 ) -> Coroutine[Any, Any, Response]:
     """
@@ -49,10 +51,20 @@ def put_db_doc(
     :param db: The name of the CouchDB database to which to add the document.
     :param docid: The document ID of the new document.
     :param body: JSON content corresponding to the new document.
-    :param params: Optional query parameter options.
+    :param rev: Document’s revision if updating an existing document.
+    :param batch: Whether to store the document in batch mode. "ok" for if true.
+    :param new_edits: Whether to prevent insertion of a conflicting document.
     :param client_kwargs: Arguments passed to the HTTP client.
     :return: The response of the HTTP request.
     """
+
+    params = dict()
+    if rev is not None:
+        params['rev'] = rev
+    if batch is not None:
+        params['batch'] = batch
+    if new_edits is not None:
+        params['new_edits'] = new_edits
 
     return client.put(url=f'/{db}/{docid}', json=body, params=params, **client_kwargs)
 
