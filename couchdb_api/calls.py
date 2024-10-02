@@ -32,6 +32,28 @@ def get_db_doc(
     return client.get(f'/{db}/{docid}', params=params, **client_kwargs)
 
 
+def head_db_doc(
+    client: AsyncClient,
+    db: str,
+    docid: str,
+    **client_kwargs: dict[str, Any]
+) -> Coroutine[Any, Any, Response]:
+    """
+    Retrieve from the CouchDB database with the name `db` minimal information about the having the document ID `docid`.
+
+    https://docs.couchdb.org/en/stable/api/document/common.html#get--db-docid
+
+    :param client: An HTTP client with which to perform the request.
+    :param db: The name of the CouchDB database from which to retrieve the document.
+    :param docid: The document ID of the document to retrieve.
+    :param params: Optional query parameter options.
+    :param client_kwargs: Arguments passed to the HTTP client.
+    :return: The response of the HTTP request.
+    """
+
+    return client.head(f'/{db}/{docid}', **client_kwargs)
+
+
 def put_db_doc(
     client: AsyncClient,
     db: str,
@@ -269,6 +291,27 @@ def put_db_security(
     )
 
 
+def get_attachment(
+    client: AsyncClient,
+    db: str,
+    docid: str,
+    attname: str,
+) -> Coroutine[Any, Any, Response]:
+    """
+    Upload the supplied content as an attachment to the specified document.
+
+    https://docs.couchdb.org/en/stable/api/document/attachments.html#put--db-docid-attname
+
+    :param client: An HTTP client with which to perform the request.
+    :param db: The name of the database which to operate on.
+    :param docid: The ID of the document in which the attachment is stored.
+    :param attname: The name of the attachment to be stored.
+    :return: The response of the HTTP request.
+    """
+
+    return client.get(url=f'/{db}/{docid}/{attname}')
+
+
 def put_attachment(
     client: AsyncClient,
     db: str,
@@ -306,7 +349,6 @@ def get_attachment(
     db: str,
     docid: str,
     attname: str,
-    rev: str | None = None
 ) -> Coroutine[Any, Any, Response]:
     """
     Retrieve the file attachment data associated with the specified document.
@@ -317,14 +359,10 @@ def get_attachment(
     :param db: The name of the database that stores the file attachment.
     :param docid: The ID of the document that stores the file attachment.
     :param attname: The name of the file attachment whose data to retrieve.
-    :param rev: The document revision of the document that stores the file attachment.
     :return: The response of the HTTP request.
     """
 
-    return client.get(
-        url=f'/{db}/{docid}/{attname}',
-        params=dict(rev=rev) if rev else None,
-    )
+    return client.get(url=f'/{db}/{docid}/{attname}')
 
 
 def create_user(
